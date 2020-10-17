@@ -5,12 +5,13 @@ namespace App\Entity;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=ParticipantRepository::class)
  * @UniqueEntity(fields={"pseudo"}, message="Le pseudo est déjà utilisé")
  */
-class Participant
+class Participant implements UserInterface
 {
     /**
      * @ORM\Id
@@ -193,5 +194,35 @@ class Participant
         $this->nomFichierPhoto = $nomFichierPhoto;
 
         return $this;
+    }
+
+    public function getRoles()
+    {
+        return $this->isAdministrateur ? ["ROLE_ADMIN"] : ["ROLE_USER"];
+    }
+
+    public function getPassword()
+    {
+        return $this->getMotDePasse();
+    }
+
+    public function setPassword($password)
+    {
+        $this->setMotDePasse($password);
+    }
+
+    public function getSalt()
+    {
+        // TODO: Implement getSalt() method.
+    }
+
+    public function getUsername()
+    {
+        return $this->getPseudo();
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
     }
 }
