@@ -18,7 +18,7 @@ class Ville
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(type="string", length=100)
      */
     private $nom;
 

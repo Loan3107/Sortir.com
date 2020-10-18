@@ -123,6 +123,7 @@ class AppFixtures extends Fixture
             $organisateur = new Participant();
             $organisateur->setPrenom($faker->firstName());
             $organisateur->setNom($faker->name());
+            $organisateur->setTelephone("0102030405");
             $organisateur->setMail($faker->email());
             $organisateur->setMotDePasse($this->passwordEncoder->encodePassword($organisateur, "password"));
             $organisateur->setPseudo("Organisateur_" . $key);
@@ -138,7 +139,7 @@ class AppFixtures extends Fixture
 
             $oSortie->setNom("Sortie_" . $organisateur->getPseudo());
             $oSortie->setDateDebut(new DateTime());
-            $oSortie->setDateCloture(new DateTime(date("d/m/Y H:i", $timestamp+random_int(0, 10))));
+            $oSortie->setDateCloture(new DateTime(date("d-m-Y", $timestamp + random_int(0, 10))));
             $oSortie->setEtat($toEtat[random_int(0, count($toEtat) - 1)]);
             $oSortie->setLieu($toLieu[random_int(0, count($toLieu) - 1)]);
             $oSortie->setOrganisateur($organisateur);
@@ -151,9 +152,10 @@ class AppFixtures extends Fixture
                 $oParticipant = new Participant();
                 $oParticipant->setPrenom($faker->firstName());
                 $oParticipant->setNom($faker->name());
+                $oParticipant->setTelephone("0102030405");
                 $oParticipant->setMail($faker->email());
                 $oParticipant->setMotDePasse($this->passwordEncoder->encodePassword($oParticipant, "password"));
-                $oParticipant->setPseudo("Participant_" . $key . "Campus" . $oCampus->getId());
+                $oParticipant->setPseudo("Participant_" . $i . "_Campus_" . $oCampus->getId());
                 $oParticipant->setIsActif($faker->boolean());
                 $oParticipant->setIsAdministrateur($faker->boolean());
                 $oParticipant->setCampus($oCampus);
@@ -163,7 +165,7 @@ class AppFixtures extends Fixture
                 //Génération d'une inscription à une sortie
                 $oInscription = new Inscription();
                 $oInscription->setDateInscription(
-                    new DateTime($faker->date($format = "d/m/Y H:i", $max = 'now'))
+                    new DateTime($faker->date($format = 'd-m-Y', $max = 'now'))
                 );
                 $oInscription->setParticipant($oParticipant);
                 $oInscription->setSortie($oSortie);
