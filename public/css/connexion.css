@@ -1,0 +1,33 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #24292e;
+    background-color: #fff;
+}
+
+.connexion-title {
+    font-family: 'Sansita Swashed', cursive;
+    color: #24292e;
+    text-align: center;
+}
+
+.auth-form {
+    width: 340px;
+    margin: 0 auto;
+    border: 1px solid #d8dee2;
+    border-radius: 5px;
+    padding: 20px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.btn-success:focus {
+    outline: none;
+    box-shadow: none;
+}
