@@ -20,10 +20,9 @@ security:
                 login_path: login
                 check_path: login
                 csrf_token_generator: security.csrf.token_manager
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 14400 # 4h en secondes
-                path: /
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
             logout:
                 path: logout
                 target: login
