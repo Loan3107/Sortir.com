@@ -24,7 +24,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
     use TargetPathTrait;
 
     public const LOGIN_PATH = 'login';
-    public const BASE_PATH = '';
+    public const BASE_PATH = 'sortie_get_list';
 
     private $em;
     private $urlGenerator;

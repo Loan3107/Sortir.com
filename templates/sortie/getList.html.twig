@@ -1,0 +1,50 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %} {{ parent() }} | {{ title }} {% endblock %}
+
+{% block stylesheet %} {% endblock %}
+
+{% block body %}
+
+    <table id="table_sorties" class="table table-striped mt-5 w-100">
+        <thead>
+            <th class="w-10">Nom de la sortie</th>
+            <th class="w-20">Date de la sortie</th>
+            <th class="w-20">Clôture inscriptions</th>
+            <th class="w-10">Inscrits/Places</th>
+            <th class="w-10">Etat</th>
+            <th>Inscrit</th>
+            <th class="w-20">Organisateur</th>
+            <th>Actions</th>
+        </thead>
+    </table>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script>
+        $("#table_sorties").DataTable({
+            ajax: {
+                url: "{{ path('sortie_get_list_json') }}",
+                method: 'GET',
+                dataSrc: ""
+            },
+            columns: [
+                { "data": "nom" },
+                { "data": "dateDebut" },
+                { "data": "dateCloture" },
+                { "data": "nbMaxInscriptions" },
+                { "data": "etat" },
+                { "data": "organisateur" }
+            ],
+            searching: false,
+            filter: false,
+            info: false,
+            paging: false
+        });
+    </script>
+
+{% endblock %}
