@@ -6,8 +6,18 @@
 
 {% block body %}
 
-    <table id="table_sorties" class="table table-striped mt-5 w-100">
-        <thead>
+    <div class="card m-5 p-5">
+        <div class="row p-0 m-0">
+            <div class="col-md-6 p-0">
+                <h5 class="font-weight-bold">Liste des sorties</h5>
+            </div>
+            <div class="col-md-6 p-0 d-flex justify-content-end">
+                <button class="btn btn-outline-success"><i class="fas fa-plus"></i> Créer une sortie</button>
+            </div>
+        </div>
+
+        <table id="table_sorties" class="table table-striped mt-5 w-100">
+            <thead>
             <th class="w-10">Nom de la sortie</th>
             <th class="w-20">Date de la sortie</th>
             <th class="w-20">Clôture inscriptions</th>
@@ -16,8 +26,9 @@
             <th>Inscrit</th>
             <th class="w-20">Organisateur</th>
             <th>Actions</th>
-        </thead>
-    </table>
+            </thead>
+        </table>
+    </div>
 
 {% endblock %}
 
@@ -38,12 +49,26 @@
                 { "data": "dateCloture" },
                 { "data": "nbMaxInscriptions" },
                 { "data": "etat" },
-                { "data": "organisateur" }
+                { "data": "isInscrit" },
+                { "data": "organisateur" },
+                { "data": "actions" }
+            ],
+            columnDefs: [
+                {
+                    "targets": [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+                    "className": "text-center"
+                }
             ],
             searching: false,
             filter: false,
             info: false,
-            paging: false
+            lengthChange: false,
+            language: {
+                paginate: {
+                    previous: '<i class="fas fa-chevron-left"></i>',
+                    next: '<i class="fas fa-chevron-right"></i>'
+                }
+            }
         });
     </script>
 
