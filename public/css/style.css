@@ -20,6 +20,38 @@ body {
     color: white;
 }
 
+.title {
+    font-family: 'Sansita Swashed', cursive;
+    color: #24292e;
+    text-align: center;
+}
+
+.form-inline .form-control {
+    width: 100%;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.form-inline .btn-success {
+    min-width: 150px;
+}
+
+.form-inline .btn-secondary {
+    min-width: 150px;
+}
+
+.form-inline .btn-outline-success {
+    border-radius: 20px;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
 .btn-success:focus {
     outline: none;
     box-shadow: none;
