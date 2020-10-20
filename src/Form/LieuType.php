@@ -3,18 +3,16 @@
 namespace App\Form;
 
 use App\Entity\Lieu;
-use App\Entity\Sortie;
+use App\Entity\Ville;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SortieType extends AbstractType
+class LieuType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -26,44 +24,30 @@ class SortieType extends AbstractType
                     'maxlength' => 100
                 ]
             ])
-            ->add('dateDebut', DateTimeType::class, [
-                'required' => true,
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
-            ->add('duree', IntegerType::class, [
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
-            ->add('dateCloture', DateTimeType::class, [
-                'required' => true,
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
-            ->add('nbInscriptionsMax', IntegerType::class, [
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
-            ->add('descriptionInfos', TextareaType::class, [
+            ->add('rue', TextType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'maxlength' => 500
+                    'maxlength' => 255
                 ]
             ])
-            ->add('lieu', EntityType::class, [
+            ->add('latitude', IntegerType::class, [
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                ]
+            ])
+            ->add('longitude', IntegerType::class, [
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                ]
+            ])
+            ->add('ville', EntityType::class, [
                 'required' => true,
-                'class' => Lieu::class,
-                'choice_label' => function ($lieu) {
-                    return $lieu->getNom();
+                'class' => Ville::class,
+                'choice_label' => function ($ville) {
+                    return $ville->getNom();
                 },
                 'attr' => [
                     'class' => 'form-control'
@@ -75,21 +59,13 @@ class SortieType extends AbstractType
                     'class' => 'btn btn-success'
                 ]
             ])
-            ->add('publier',SubmitType::class,[
-                'label' => 'Publier',
-                'attr' => [
-                    'class' => 'btn btn-success'
-                ]
-            ])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Sortie::class,
-            'date_format' => 'd/m/Y',
-            'time_format' => 'H:i'
+            'data_class' => Lieu::class,
         ]);
     }
 }

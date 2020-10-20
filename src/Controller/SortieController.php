@@ -19,12 +19,15 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/sortie", name="sortie")
  * @IsGranted("ROLE_USER")
+ * Class SortieController
+ * @package App\Controller
  */
 class SortieController extends AbstractController
 {
     /**
      * Affiche la page de la liste des sorties
      * @Route("/getList", name="_get_list")
+     * @return Response
      */
     public function getList()
     {
@@ -251,7 +254,11 @@ class SortieController extends AbstractController
         return new JsonResponse($array);
     }
 
-    //Permet de récupérer les erreurs lors de la soumission d'un formulaire non valide
+    /**
+     * Permet de récupérer les erreurs lors de la soumission d'un formulaire non valide
+     * @param FormInterface $form
+     * @return array
+     */
     private function getErrorsFromForm(FormInterface $form)
     {
         $errors = array();
