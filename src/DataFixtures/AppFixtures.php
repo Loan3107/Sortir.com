@@ -143,7 +143,7 @@ class AppFixtures extends Fixture
             $oSortie->setEtat($toEtat[random_int(0, count($toEtat) - 1)]);
             $oSortie->setLieu($toLieu[random_int(0, count($toLieu) - 1)]);
             $oSortie->setOrganisateur($organisateur);
-            $oSortie->setNbInscriptionsMax(random_int(2, 20));
+            $oSortie->setNbInscriptionsMax(20);
 
             $manager->persist($oSortie);
 
