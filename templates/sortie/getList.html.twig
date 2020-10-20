@@ -12,20 +12,23 @@
                 <h5 class="font-weight-bold">Liste des sorties</h5>
             </div>
             <div class="col-md-6 p-0 d-flex justify-content-end">
-                <button class="btn btn-outline-success"><i class="fas fa-plus"></i> Créer une sortie</button>
+                <a type="button" href="{{ path('sortie_get_form', {'idSortie': -1}) }}" class="btn btn-outline-success">
+                    <i class="fas fa-plus"></i> Créer une sortie
+                </a>
             </div>
         </div>
 
         <table id="table_sorties" class="table table-striped mt-5 w-100">
             <thead>
-            <th class="w-10">Nom de la sortie</th>
-            <th class="w-20">Date de la sortie</th>
-            <th class="w-20">Clôture inscriptions</th>
-            <th class="w-10">Inscrits/Places</th>
-            <th class="w-10">Etat</th>
-            <th>Inscrit</th>
-            <th class="w-20">Organisateur</th>
-            <th>Actions</th>
+                <th>Identifiant</th>
+                <th class="w-10">Nom de la sortie</th>
+                <th class="w-20">Date de la sortie</th>
+                <th class="w-20">Clôture inscriptions</th>
+                <th class="w-10">Inscrits/Places</th>
+                <th class="w-10">Etat</th>
+                <th>Inscrit</th>
+                <th class="w-20">Organisateur</th>
+                <th>Actions</th>
             </thead>
         </table>
     </div>
@@ -44,6 +47,7 @@
                 dataSrc: ""
             },
             columns: [
+                { "data": "id" },
                 { "data": "nom" },
                 { "data": "dateDebut" },
                 { "data": "dateCloture" },
@@ -55,8 +59,16 @@
             ],
             columnDefs: [
                 {
-                    "targets": [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+                    "targets": [ 0 ],
+                    "className": "d-none"
+                },
+                {
+                    "targets": [ 1, 2, 3, 4, 5, 6, 7, 8 ],
                     "className": "text-center"
+                },
+                {
+                    "targets": [ 8 ],
+                    "orderable": false
                 }
             ],
             searching: false,

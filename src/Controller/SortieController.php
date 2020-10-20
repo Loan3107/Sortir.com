@@ -2,12 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Inscription;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\SortieType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -28,8 +34,99 @@ class SortieController extends AbstractController
     }
 
     /**
+     * Affiche la page de création/modification d'une sortie
+     * @Route("/getForm/{idSortie}", name="_get_form")
+     * @param Request $request
+     * @param $idSortie
+     * @return RedirectResponse|Response
+     */
+    public function getForm(Request $request, $idSortie)
+    {
+        //Récupération de l'entity manager
+        $em = $this->getDoctrine()->getManager();
+        //Récupération du repository de l'entité Sortie
+        $sortieRepository = $em->getRepository(Sortie::class);
+        //Récupération du repository de l'entité Etat
+        $etatRepository = $em->getRepository(Etat::class);
+        //Récupération du repository de l'entité Participant
+        $participantRepository = $em->getRepository(Participant::class);
+
+        //Récupération de l'utilisateur
+        $oParticipant = $participantRepository->findOneBy(['pseudo' => $this->getUser()->getUsername()]);
+
+        //Si l'identifiant de la sortie fournie est égal à -1, il s'agit d'une création
+        if ($idSortie == -1) {
+            $oSortie = new Sortie();
+            $title = "Création";
+        } else { //Sinon il s'agit d'une modification
+            $oSortie = $sortieRepository->findOneBy(['id' => $idSortie]);
+            $title = "Modification";
+            //Si le participant qui essaye de modifier la sortie n'en est pas l'organisateur
+            //On affiche un message d'erreur
+            if ($oParticipant->getPseudo() != $oSortie->getOrganisateur()->getPseudo()) {
+                $this->addFlash('danger', "Vous n'êtes pas l'organisateur de cette sortie !");
+                return $this->redirectToRoute('sortie_get_list');
+            }
+        }
+
+        //Création du formulaire
+        $form = $this->createForm(SortieType::class, $oSortie);
+        $form->handleRequest($request);
+
+        //Si le formulaire est soumit en cliquant sur le bouton Enregistrer et est valide
+        if ($form->isSubmitted() && $form->isValid() && $form->get('enregistrer')->isClicked()) {
+            //On récupère les données et on hydrate l'instance
+            $oSortie = $form->getData();
+            $oSortie->setOrganisateur($oParticipant);
+
+            //L'état de la sortie est à créé
+            $oEtat = $etatRepository->findOneBy(['libelle' => "Créée"]);
+            $oSortie->setEtat($oEtat);
+
+            //On sauvegarde
+            $em->persist($oSortie);
+            $em->flush();
+
+            //On affiche un message de succès et on redirige vers la page des sorties
+            $this->addFlash('success', 'Sortie créée !');
+            return $this->redirectToRoute("sortie_get_list");
+        }
+        //Si le formulaire est soumit en cliquant sur le bouton Publier et est valide
+        elseif ($form->isSubmitted() && $form->isValid() && $form->get('publier')->isClicked()) {
+            //On récupère les données et on hydrate l'instance
+            $oSortie = $form->getData();
+            $oSortie->setOrganisateur($oParticipant);
+
+            //L'état de la sortie est à ouvert
+            $oEtat = $etatRepository->findOneBy(['libelle' => "Ouverte"]);
+            $oSortie->setEtat($oEtat);
+
+            //On sauvegarde
+            $em->persist($oSortie);
+            $em->flush();
+
+            //On affiche un message de succès et on redirige vers la page des sorties
+            $this->addFlash('success', 'Sortie publiée et ouverte à l\'inscription !');
+            return $this->redirectToRoute("sortie_get_list");
+        }else { //Si le formulaire n'est pas valide
+            $errors = $this->getErrorsFromForm($form);
+
+            //Pour chaque erreur, on affiche une alerte contenant le message
+            foreach ($errors as $error) {
+                $this->addFlash("danger", $error[0]);
+            }
+        }
+
+        return $this->render('sortie/getForm.html.twig', [
+            'title' => $title,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
      * Récupère la liste des sorties au format JSON
      * @Route("/getListJson", name="_get_list_json")
+     * @return JsonResponse
      */
     public function getListJson()
     {
@@ -95,10 +192,10 @@ class SortieController extends AbstractController
                 ($oSortie->getEtat()->getLibelle() == "Créée")
             ) {
                 $t['actions'] .=
-                    '<button class="btn p-0" id="btn_sortie_edit" title="Modifier">'
+                    '<a type="button" href="'. $this->generateUrl('sortie_get_form', ['idSortie' => $oSortie->getId()]).'" class="btn p-0" title="Modifier">'
                     .'<i class="fas fa-edit"></i>'
-                    .'</button>'
-                    .'<button class="btn p-0" id="btn_sortie_delete" title="Supprimer">'
+                    .'</a>'
+                    .'<button class="btn p-0" title="Supprimer">'
                     .'<i class="fas fa-trash"></i>'
                     .'</button>';
             }
@@ -110,7 +207,7 @@ class SortieController extends AbstractController
                 ($oSortie->getEtat()->getLibelle() == "Ouverte")
             ) {
                 $t['actions'] .=
-                    '<button class="btn p-0" id="btn_sortie_delete" title="Supprimer">'
+                    '<button class="btn p-0" title="Supprimer">'
                     .'<i class="fas fa-trash"></i>'
                     .'</button>';
             }
@@ -122,7 +219,7 @@ class SortieController extends AbstractController
                 ($oSortie->getEtat()->getLibelle() == "Cloturée")
             ) {
                 $t['actions'] .=
-                    '<button class="btn p-0" id="btn_sortie_delete" title="Supprimer">'
+                    '<button class="btn p-0" title="Supprimer">'
                     .'<i class="fas fa-trash"></i>'
                     .'</button>';
             }
@@ -134,14 +231,14 @@ class SortieController extends AbstractController
                 ($isInscrit && $oSortie->getEtat()->getLibelle() != "En cours")
             ) {
                 $t['actions'] .=
-                    '<button class="btn p-0" id="btn_sortie_withdraw" title="Se désister">'
+                    '<button class="btn p-0" title="Se désister">'
                     .'<i class="far fa-times-circle"></i>'.
                     '</button>';
             }
             //Si l'utilisateur n'est pas inscrit et que l'état de la sortie est ouvert, il peut s'inscrire
             elseif (!$isInscrit && $oSortie->getEtat()->getLibelle() == "Ouverte") {
                 $t['actions'] .=
-                    '<button class="btn p-0" id="btn_sortie_subscribe" title="S\'inscrire">'
+                    '<button class="btn p-0" title="S\'inscrire">'
                     .'<i class="far fa-check-square"></i>'
                     .'</button>';
             }
@@ -152,5 +249,25 @@ class SortieController extends AbstractController
 
         //On retourne le tableau au format JSON
         return new JsonResponse($array);
+    }
+
+    //Permet de récupérer les erreurs lors de la soumission d'un formulaire non valide
+    private function getErrorsFromForm(FormInterface $form)
+    {
+        $errors = array();
+
+        foreach ($form->getErrors() as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        foreach ($form->all() as $childForm) {
+            if ($childForm instanceof FormInterface) {
+                if ($childErrors = $this->getErrorsFromForm($childForm)) {
+                    $errors[$childForm->getName()] = $childErrors;
+                }
+            }
+        }
+
+        return $errors;
     }
 }
