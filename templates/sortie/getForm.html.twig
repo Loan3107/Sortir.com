@@ -84,7 +84,7 @@
                         {{ form_widget(form.lieu) }}
                     </div>
                     <div class="col-sm-2">
-                        <a type="button" class="btn btn-outline-success w-auto">
+                        <a type="button" id="btn_lieu_add" class="btn btn-outline-success w-auto">
                             <i class="fa fa-plus"></i>
                         </a>
                     </div>
@@ -106,5 +106,19 @@
 {% block javascripts %}
 
     {{ parent() }}
+
+    <script>
+        $('#btn_lieu_add').on('click', function () {
+            routeGetForm = '{{ path('lieu_get_form') }}';
+
+            $.ajax({
+                url: routeGetForm,
+                type: 'GET',
+                success: function (data) {
+                    $(data).modal();
+                }
+            });
+        });
+    </script>
 
 {% endblock %}

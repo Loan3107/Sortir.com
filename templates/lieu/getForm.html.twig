@@ -1,0 +1,79 @@
+<div id="modale_lieu" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="title">{{ title }}</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(form, {'attr': {'class': 'form-inline', 'action': path('lieu_get_form')}}) }}
+
+                {{ form_errors(form) }}
+
+                <div class="col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="lieu_nom" class="col-sm-2 col-form-label justify-content-start">
+                            Nom
+                            <span class="required">*</span>
+                        </label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.nom) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="lieu_rue" class="col-sm-2 col-form-label justify-content-start">
+                            Rue
+                        </label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.rue) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="lieu_latitude" class="col-sm-2 col-form-label justify-content-start">
+                            Latitude
+                        </label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.latitude) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="lieu_longitude" class="col-sm-2 col-form-label justify-content-start">
+                            Longitude
+                        </label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.longitude) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group mb-3">
+                        <label for="lieu_ville" class="col-sm-2 col-form-label justify-content-start">
+                            Ville
+                        </label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.ville) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 ml-auto mr-auto">
+                    {{ form_widget(form.enregistrer) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
