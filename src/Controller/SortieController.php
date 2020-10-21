@@ -127,6 +127,51 @@ class SortieController extends AbstractController
     }
 
     /**
+     * Permet à l'utilisateur d'annuler une sortie qu'il a organisé
+     * @Route("/cancel/{idSortie}", name="_cancel")
+     * @param [type] $idSortie
+     * @return RedirectResponse
+     */
+    public function cancel($idSortie) {
+        //Récupération de l'entity manager
+        $em = $this->getDoctrine()->getManager();
+        //Récupération du repository de l'entité Sortie
+        $sortieRepository = $em->getRepository(Sortie::class);
+        //Récupération du repository de l'entité Participant
+        $participantRepository = $em->getRepository(Participant::class);
+        //Récupération du repository de l'entité Etat
+        $etatRepository = $em->getRepository(Etat::class);
+        
+        //Récupération de la sortie à annuler
+        $oSortie = $sortieRepository->findOneBy(['id' => $idSortie]);
+        //Récupération de l'utilisateur
+        $oParticipant = $participantRepository->findOneBy(['pseudo' => $this->getUser()->getPseudo()]);
+        //Récupération de l'état annulé
+        $oEtat = $etatRepository->findOneBy(['libelle' => "Annulée"]);
+
+        //On vérifie qu'il existe bien une sortie et que son état est soit :
+        //Créé, Ouvert, Clôturé 
+        if($oSortie && ($oSortie->getEtat()->getLibelle() != "Passée" || $oSortie->getEtat()->getLibelle() != "En cours")) {
+            //On vérifie si l'utilisateur est bien l'organisateur de la sortie
+            if($oParticipant->getPseudo() == $oSortie->getOrganisateur()->getPseudo()) {
+                $oSortie->setEtat($oEtat);
+                $em->persist($oSortie);
+                $em->flush();
+
+                //Affichage d'un message de succès et redirection vers la liste des sorties
+                $this->addFlash('warning', "Annulation de la sortie effectuée !");
+                return $this->redirectToRoute('sortie_get_list');
+            } else {//Affichage d'un message d'erreur et redirection vers la liste des sorties
+                $this->addFlash('danger', "Vous n'êtes pas l'organisateur de cette sortie !");
+                return $this->redirectToRoute('sortie_get_list');
+            }
+        } else {//On affiche un message d'erreur et on redirige vers la liste des sorties
+            $this->addFlash('danger', "Une erreur s'est produite ! Réessayez ultérieurement");
+            return $this->redirectToRoute('sortie_get_list');
+        }
+    }
+
+    /**
      * Récupère la liste des sorties au format JSON
      * @Route("/getListJson", name="_get_list_json")
      * @return JsonResponse
@@ -198,9 +243,9 @@ class SortieController extends AbstractController
                     '<a type="button" href="'. $this->generateUrl('sortie_get_form', ['idSortie' => $oSortie->getId()]).'" class="btn p-0" title="Modifier">'
                     .'<i class="fas fa-edit"></i>'
                     .'</a>'
-                    .'<button class="btn p-0" title="Supprimer">'
+                    .'<a type="button" href="'. $this->generateUrl('sortie_cancel', ['idSortie' => $oSortie->getId()]).'" class="btn p-0" title="Annuler">'
                     .'<i class="fas fa-trash"></i>'
-                    .'</button>';
+                    .'</a>';
             }
             //Si l'utilisateur est organisateur de la sortie et que l'état de la sortie est à ouvert,
             //l'utilisateur peut toujours la supprimer
@@ -210,9 +255,9 @@ class SortieController extends AbstractController
                 ($oSortie->getEtat()->getLibelle() == "Ouverte")
             ) {
                 $t['actions'] .=
-                    '<button class="btn p-0" title="Supprimer">'
+                    '<a type="button" href="'. $this->generateUrl('sortie_cancel', ['idSortie' => $oSortie->getId()]).'" class="btn p-0" title="Annuler">'
                     .'<i class="fas fa-trash"></i>'
-                    .'</button>';
+                    .'</a>';
             }
             //Si l'utilisateur est organisateur de la sortie et que l'état de la sortie est à clôturé,
             //l'utilisateur peut seulement supprimer la sortie
@@ -222,9 +267,9 @@ class SortieController extends AbstractController
                 ($oSortie->getEtat()->getLibelle() == "Cloturée")
             ) {
                 $t['actions'] .=
-                    '<button class="btn p-0" title="Supprimer">'
+                    '<a type="button" href="'. $this->generateUrl('sortie_cancel', ['idSortie' => $oSortie->getId()]).'" class="btn p-0" title="Annuler">'
                     .'<i class="fas fa-trash"></i>'
-                    .'</button>';
+                    .'</a>';
             }
             //Si l'utilisateur est inscrit à une sortie et que la sortie n'est pas annulée, passée ou en
             //cours d'activité, il peut se désister
