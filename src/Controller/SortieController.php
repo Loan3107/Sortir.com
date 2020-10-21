@@ -129,7 +129,7 @@ class SortieController extends AbstractController
     /**
      * Permet à l'utilisateur d'annuler une sortie qu'il a organisé
      * @Route("/cancel/{idSortie}", name="_cancel")
-     * @param [type] $idSortie
+     * @param $idSortie
      * @return RedirectResponse
      */
     public function cancel($idSortie) {
@@ -279,16 +279,16 @@ class SortieController extends AbstractController
                 ($isInscrit && $oSortie->getEtat()->getLibelle() != "En cours")
             ) {
                 $t['actions'] .=
-                    '<button class="btn p-0" title="Se désister">'
+                    '<a type="button" href="'. $this->generateUrl('inscription_withdraw', ['idSortie' => $oSortie->getId()]) .'" class="btn p-0" title="Se désister">'
                     .'<i class="far fa-times-circle"></i>'.
-                    '</button>';
+                    '</a>';
             }
             //Si l'utilisateur n'est pas inscrit et que l'état de la sortie est ouvert, il peut s'inscrire
             elseif (!$isInscrit && $oSortie->getEtat()->getLibelle() == "Ouverte") {
                 $t['actions'] .=
-                    '<button class="btn p-0" title="S\'inscrire">'
+                    '<a type="button" href="'. $this->generateUrl('inscription_registrate', ['idSortie' => $oSortie->getId()]) .'" class="btn p-0" title="S\'inscrire">'
                     .'<i class="far fa-check-square"></i>'
-                    .'</button>';
+                    .'</a>';
             }
 
             //On stocke les informations dans le tableau final
