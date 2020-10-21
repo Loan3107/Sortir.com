@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @Route("/sortie", name="sortie")
@@ -169,6 +170,82 @@ class SortieController extends AbstractController
             $this->addFlash('danger', "Une erreur s'est produite ! Réessayez ultérieurement");
             return $this->redirectToRoute('sortie_get_list');
         }
+    }
+
+    /**
+     * @Route("/search",name="_search")
+     * @param Request $request
+     */
+    public function filter(Request $request) {
+        //Récupération de l'entity manager
+        $em = $this->getDoctrine()->getManager();
+        $sortieRepository = $em->getRepository(Sortie::class);
+
+        //Récupération des filtres
+        $nom = $request->get('filtre_nom');  
+        $dateDebut = $request->get('filtre_date_debut');  
+        $dateFin = $request->get('filtre_date_fin');  
+        $organisateur = $request->get('filtre_organisateur');  
+        $inscrit = $request->get('filtre_inscrit');  
+        $nonInscrit = $request->get('filtre_non_inscrit');  
+        $passee = $request->get('filtre_passee');
+        
+        //Création de la requête
+        $query = $em->createQueryBuilder('s');        
+        if($nom) {
+            $query = $query
+                ->andWhere('s.nom LIKE :nom')
+                ->setParameter('nom', '%'.$nom.'%');
+        }
+        if($dateDebut) {
+            $query = $query
+                ->andWhere('s.dateDebut >= :dateDebut')
+                ->setParameter('dateDebut', $dateDebut);
+        }
+        if($dateFin) {
+            $query = $query
+                ->andWhere('s.dateDebut <= :dateFin')
+                ->setParameter('dateFin', $dateFin);
+        }
+        if ($inscrit) {
+            $querySub = $em->createQueryBuilder()
+                ->select('IDENTITY(inscription.sortie)')
+                ->from('App:Inscription', 'inscription')
+                ->where('inscription.participant = :participantId');
+
+
+            $query = $query
+                ->andWhere(
+                    $query
+                    ->expr()
+                    ->In('s.id', $querySub->getDQL())
+                )
+                ->setParameter('participantId', $this->getUser()->getId());
+        }
+        if ($organisateur) {
+            $query = $query
+                ->andWhere('o.id = :organisateurId')
+                ->setParameter('organisateurId', $this->getUser()->getId());
+        }
+        if ($nonInscrit) {
+            $querySub = $em->createQueryBuilder()
+                ->select('IDENTITY(inscription.sortie)')
+                ->from('App:Inscription', 'inscription')
+                ->where('inscription.participant = :participantId');
+
+            $query = $query
+                ->andWhere($query->expr()->notIn('s.id', $querySub->getDQL()))
+                ->setParameter('participantId', $this->getUser()->getId());
+        }
+        if ($passee) {
+            $query = $query
+                ->andWhere('e.libelle = \'Passée\'');
+        }
+
+        $toSortie = $sortieRepository->searchByFilters($query);
+
+        dump($toSortie);
+        exit();
     }
 
     /**

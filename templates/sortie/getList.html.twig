@@ -16,6 +16,93 @@
                     <i class="fas fa-plus"></i> Créer une sortie
                 </a>
             </div>
+            <button id="btn_filters_show" class="btn p-0" onclick="return showBlockFilters();">Ajouter des filtres</button>
+            <button id="btn_filters_hide" class="btn p-0 d-none" onclick="return hideBlockFilters();">Masquer les filtres</button>
+        </div>
+
+        <div id="block_filters" class="d-none mt-4">
+            <form class="form-inline" action="{{ path('sortie_search') }}" method="post">
+                <div class="col-sm-7 p-0">
+                    <div class="form-group mb-3 col-sm-12 p-0">
+                        <label class="col-form-label col-sm-3 justify-content-start">
+                            Le nom de la sortie contient :
+                        </label>
+                        <div class="col-sm-6 p-0">
+                            <input class="form-control" type="text" name="filtre_nom"> 
+                        </div>       
+                    </div>
+
+                    <div class="form-group mb-3 col-sm-12 p-0">
+                        <label class="col-form-label col-sm-1 justify-content-start">
+                            Entre
+                        </label>
+                        <div class="col-sm-8 p-0">
+                            <input id="search_sortie_dateDebut" class="form-control" type="datetime-local" name="filtre_dateDebut">
+                        </div>
+                        <div class="col-sm-1 p-0">
+                            <button type="button" class="btn" onclick="deleteValue('#search_sortie_dateDebut')">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </div>   
+                    </div>
+
+                    <div class="form-group mb-3 col-sm-12 p-0">
+                        <label class="col-sm-1 col-form-label justify-content-start">
+                            et
+                        </label>
+                        <div class="col-sm-8 p-0">
+                            <input id="search_sortie_dateFin" class="form-control" type="datetime-local" name="filtre_dateFin">
+                        </div>
+                        <div class="col-sm-1 p-0">
+                            <button type="button" class="btn" onclick="deleteValue('#search_sortie_dateFin')">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </div>  
+                    </div>
+                </div>
+
+                <div class="col-sm-5 p-0">
+                    <div class="form-group mb-3">
+                        <label class="col-sm-8 col-form-label justify-content-start">
+                            Dont je suis l'organisateur/trice
+                        </label>
+                        <div class="col-sm-1">
+                            <input class="form-check-input" type="checkbox" name="filtre_organisateur">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="col-sm-8 col-form-label justify-content-start">
+                            Auxquelles je suis inscrit/e
+                        </label>
+                        <div class="col-sm-1">
+                            <input class="form-check-input" type="checkbox" name="filtre_inscrit">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="col-sm-8 col-form-label justify-content-start">
+                            Auxquelles je ne suis pas inscrit/e
+                        </label>
+                        <div class="col-sm-1">
+                            <input class="form-check-input" type="checkbox" name="filtre_non_inscrit">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="col-sm-8 col-form-label justify-content-start">
+                            Sorties passées
+                        </label>
+                        <div class="col-sm-1">
+                            <input class="form-check-input" type="checkbox" name="filtre_passee">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 ml-auto mr-auto">
+                    <button type="submit" class="btn btn-success">Filtrer</button>
+                </div>
+            </form>
         </div>
 
         <table id="table_sorties" class="table table-striped mt-5 w-100">
@@ -40,6 +127,18 @@
     {{ parent() }}
 
     <script>
+        function showBlockFilters() {
+            $('#btn_filters_show').addClass('d-none');
+            $('#block_filters').removeClass('d-none');
+            $('#btn_filters_hide').removeClass('d-none');
+        }
+
+        function hideBlockFilters() {
+            $('#btn_filters_show').removeClass('d-none');
+            $('#block_filters').addClass('d-none');
+            $('#btn_filters_hide').addClass('d-none');
+        }
+
         $("#table_sorties").DataTable({
             ajax: {
                 url: "{{ path('sortie_get_list_json') }}",
