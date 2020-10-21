@@ -27,13 +27,14 @@ class SortieController extends AbstractController
 {
     /**
      * Affiche la page de la liste des sorties
-     * @Route("/getList", name="_get_list")
+     * @Route("/getList/{query}", name="_get_list")
      * @return Response
      */
-    public function getList()
+    public function getList($query = null)
     {
         return $this->render('sortie/getList.html.twig', [
             'title' => 'Liste des sorties',
+            'query' => $query
         ]);
     }
 
@@ -179,7 +180,17 @@ class SortieController extends AbstractController
     public function filter(Request $request) {
         //Récupération de l'entity manager
         $em = $this->getDoctrine()->getManager();
+        //Récupération du repository de l'entité Sortie
         $sortieRepository = $em->getRepository(Sortie::class);
+        //Récupération du repository de l'entité Participant
+        $participantRepository = $em->getRepository(Participant::class);
+        //Récupération du repository de l'entité Etat
+        $etatRepository = $em->getRepository(Etat::class);
+
+        //Récupération du participant en base de données
+        $oParticipant = $participantRepository->findOneBy(['pseudo' => $this->getUser()->getPseudo()]);
+        //Récupération de l'état passé
+        $oEtat = $etatRepository->findOneBy(['libelle' => "Passée"]);
 
         //Récupération des filtres
         $nom = $request->get('filtre_nom');  
@@ -189,30 +200,44 @@ class SortieController extends AbstractController
         $inscrit = $request->get('filtre_inscrit');  
         $nonInscrit = $request->get('filtre_non_inscrit');  
         $passee = $request->get('filtre_passee');
+
+        //Si on ne récupère aucun filtre, on redirige vers la liste des sorties
+        if(
+            trim($nom) == ""
+            && $dateDebut == null
+            && $dateFin == null
+            && $organisateur == null
+            && $inscrit == null
+            && $nonInscrit == null
+            && $passee == null
+        ) {
+            return $this->redirectToRoute('sortie_get_list');
+        }
         
         //Création de la requête
-        $query = $em->createQueryBuilder('s');        
-        if($nom) {
+        $query = $em->createQueryBuilder()
+            ->select('s')
+            ->from('App:Sortie', 's');        
+        if(trim($nom) != "") {
             $query = $query
                 ->andWhere('s.nom LIKE :nom')
                 ->setParameter('nom', '%'.$nom.'%');
         }
-        if($dateDebut) {
+        if($dateDebut != null) {
             $query = $query
                 ->andWhere('s.dateDebut >= :dateDebut')
                 ->setParameter('dateDebut', $dateDebut);
         }
-        if($dateFin) {
+        if($dateFin != null) {
             $query = $query
                 ->andWhere('s.dateDebut <= :dateFin')
                 ->setParameter('dateFin', $dateFin);
         }
-        if ($inscrit) {
+        if ($inscrit == "check") {
             $querySub = $em->createQueryBuilder()
                 ->select('IDENTITY(inscription.sortie)')
                 ->from('App:Inscription', 'inscription')
                 ->where('inscription.participant = :participantId');
-
 
             $query = $query
                 ->andWhere(
@@ -222,12 +247,12 @@ class SortieController extends AbstractController
                 )
                 ->setParameter('participantId', $this->getUser()->getId());
         }
-        if ($organisateur) {
+        if ($organisateur == "check") {
             $query = $query
-                ->andWhere('o.id = :organisateurId')
-                ->setParameter('organisateurId', $this->getUser()->getId());
+                ->andWhere('s.organisateur = :organisateur')
+                ->setParameter('organisateur', $oParticipant);
         }
-        if ($nonInscrit) {
+        if ($nonInscrit == "check") {
             $querySub = $em->createQueryBuilder()
                 ->select('IDENTITY(inscription.sortie)')
                 ->from('App:Inscription', 'inscription')
@@ -235,25 +260,23 @@ class SortieController extends AbstractController
 
             $query = $query
                 ->andWhere($query->expr()->notIn('s.id', $querySub->getDQL()))
-                ->setParameter('participantId', $this->getUser()->getId());
+                ->setParameter('participantId', $participantRepository->findOneBy(['pseudo' => $this->getUser()->getPseudo()]));
         }
-        if ($passee) {
+        if ($passee == "check") {
             $query = $query
-                ->andWhere('e.libelle = \'Passée\'');
+                ->andWhere('s.etat = :etat')
+                ->setParameter('etat', $oEtat);
         }
-
-        $toSortie = $sortieRepository->searchByFilters($query);
-
-        dump($toSortie);
-        exit();
+        
+        return $this->redirectToRoute('sortie_get_list', ['query' => $query]);
     }
 
     /**
      * Récupère la liste des sorties au format JSON
-     * @Route("/getListJson", name="_get_list_json")
+     * @Route("/getListJson/{query}", name="_get_list_json")
      * @return JsonResponse
      */
-    public function getListJson()
+    public function getListJson($query = null)
     {
         //Récupération de l'entity manager
         $em = $this->getDoctrine()->getManager();
@@ -270,8 +293,12 @@ class SortieController extends AbstractController
         //Définition du tableau final à retourner
         $array = [];
 
-        //On récupère les sorties en base
-        $toSortie = $sortieRepository->findAll();
+        //Si on a pas de requête filtrée, on récupère toutes les sorties en base
+        if(!$query) {
+            $toSortie = $sortieRepository->findAll();
+        } else { //Sinon, on récupère les sorties correspondant aux filtres
+            $toSortie = $sortieRepository->searchByFilters($query);
+        }
         //Pour chaque sortie, on définit un tableau contenant les informations que l'on souhaite
         foreach ($toSortie as $oSortie) {
             $t = array();

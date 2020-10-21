@@ -22,8 +22,7 @@ class SortieRepository extends ServiceEntityRepository
     public function searchByFilters($query) {
         return $query
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     // /**

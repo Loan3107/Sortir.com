@@ -67,7 +67,7 @@
                             Dont je suis l'organisateur/trice
                         </label>
                         <div class="col-sm-1">
-                            <input class="form-check-input" type="checkbox" name="filtre_organisateur">
+                            <input class="form-check-input" type="checkbox" name="filtre_organisateur" value="check">
                         </div>
                     </div>
 
@@ -76,7 +76,7 @@
                             Auxquelles je suis inscrit/e
                         </label>
                         <div class="col-sm-1">
-                            <input class="form-check-input" type="checkbox" name="filtre_inscrit">
+                            <input class="form-check-input" type="checkbox" name="filtre_inscrit" value="check">
                         </div>
                     </div>
 
@@ -85,7 +85,7 @@
                             Auxquelles je ne suis pas inscrit/e
                         </label>
                         <div class="col-sm-1">
-                            <input class="form-check-input" type="checkbox" name="filtre_non_inscrit">
+                            <input class="form-check-input" type="checkbox" name="filtre_non_inscrit" value="check">
                         </div>
                     </div>
 
@@ -94,7 +94,7 @@
                             Sorties passées
                         </label>
                         <div class="col-sm-1">
-                            <input class="form-check-input" type="checkbox" name="filtre_passee">
+                            <input class="form-check-input" type="checkbox" name="filtre_passee" value="check">
                         </div>
                     </div>
                 </div>
@@ -139,9 +139,15 @@
             $('#btn_filters_hide').addClass('d-none');
         }
 
+        {% if query %}
+            let routeGetListJson = "{{ path('sortie_get_list_json', {'query': query}) }}"
+        {% else %}
+            let routeGetListJson = "{{ path('sortie_get_list_json') }}"
+        {% endif %}
+
         $("#table_sorties").DataTable({
             ajax: {
-                url: "{{ path('sortie_get_list_json') }}",
+                url: routeGetListJson,
                 method: 'GET',
                 dataSrc: ""
             },
