@@ -21,7 +21,7 @@
         </div>
 
         <div id="block_filters" class="d-none mt-4">
-            <form class="form-inline" action="{{ path('sortie_search') }}" method="post">
+            <form id="form_filters" class="form-inline">
                 <div class="col-sm-7 p-0">
                     <div class="form-group mb-3 col-sm-12 p-0">
                         <label class="col-form-label col-sm-3 justify-content-start">
@@ -105,19 +105,21 @@
             </form>
         </div>
 
-        <table id="table_sorties" class="table table-striped mt-5 w-100">
-            <thead>
-                <th>Identifiant</th>
-                <th class="w-10">Nom de la sortie</th>
-                <th class="w-20">Date de la sortie</th>
-                <th class="w-20">Clôture inscriptions</th>
-                <th class="w-10">Inscrits/Places</th>
-                <th class="w-10">Etat</th>
-                <th>Inscrit</th>
-                <th class="w-20">Organisateur</th>
-                <th>Actions</th>
-            </thead>
-        </table>
+        <div id="div_table_sorties">
+            <table id="table_sorties" class="table table-striped mt-5 w-100">
+                <thead>
+                    <th>Identifiant</th>
+                    <th class="w-10">Nom de la sortie</th>
+                    <th class="w-20">Date de la sortie</th>
+                    <th class="w-20">Clôture inscriptions</th>
+                    <th class="w-10">Inscrits/Places</th>
+                    <th class="w-10">Etat</th>
+                    <th>Inscrit</th>
+                    <th class="w-20">Organisateur</th>
+                    <th>Actions</th>
+                </thead>
+            </table>
+        </div>
     </div>
 
 {% endblock %}
@@ -139,52 +141,48 @@
             $('#btn_filters_hide').addClass('d-none');
         }
 
-        {% if query %}
-            let routeGetListJson = "{{ path('sortie_get_list_json', {'query': query}) }}"
-        {% else %}
-            let routeGetListJson = "{{ path('sortie_get_list_json') }}"
-        {% endif %}
-
-        $("#table_sorties").DataTable({
-            ajax: {
-                url: routeGetListJson,
-                method: 'GET',
-                dataSrc: ""
-            },
-            columns: [
-                { "data": "id" },
-                { "data": "nom" },
-                { "data": "dateDebut" },
-                { "data": "dateCloture" },
-                { "data": "nbMaxInscriptions" },
-                { "data": "etat" },
-                { "data": "isInscrit" },
-                { "data": "organisateur" },
-                { "data": "actions" }
-            ],
-            columnDefs: [
-                {
-                    "targets": [ 0 ],
-                    "className": "d-none"
-                },
-                {
-                    "targets": [ 1, 2, 3, 4, 5, 6, 7, 8 ],
-                    "className": "text-center"
-                },
-                {
-                    "targets": [ 8 ],
-                    "orderable": false
-                }
-            ],
-            searching: false,
-            filter: false,
-            info: false,
-            lengthChange: false,
-            language: {
-                paginate: {
-                    previous: '<i class="fas fa-chevron-left"></i>',
-                    next: '<i class="fas fa-chevron-right"></i>'
-                }
+        $.ajax({
+            url: '{{ path('sortie_get_list_json') }}',
+            type: 'POST',
+            success: function(jsonResponse) {
+                $('#table_sorties').DataTable({
+                    data: jsonResponse,
+                    columns: [
+                        { "data": "id" },
+                        { "data": "nom" },
+                        { "data": "dateDebut" },
+                        { "data": "dateCloture" },
+                        { "data": "nbMaxInscriptions" },
+                        { "data": "etat" },
+                        { "data": "isInscrit" },
+                        { "data": "organisateur" },
+                        { "data": "actions" }
+                    ],
+                    columnDefs: [
+                        {
+                            "targets": [ 0 ],
+                            "className": "d-none"
+                        },
+                        {
+                            "targets": [ 1, 2, 3, 4, 5, 6, 7, 8 ],
+                            "className": "text-center"
+                        },
+                        {
+                            "targets": [ 8 ],
+                            "orderable": false
+                        }
+                    ],
+                    searching: false,
+                    filter: false,
+                    info: false,
+                    lengthChange: false,
+                    language: {
+                        paginate: {
+                            previous: '<i class="fas fa-chevron-left"></i>',
+                            next: '<i class="fas fa-chevron-right"></i>'
+                        }
+                    }
+                }); 
             }
         });
     </script>

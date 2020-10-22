@@ -19,12 +19,6 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
-    public function searchByFilters($query) {
-        return $query
-            ->getQuery()
-            ->getResult();
-    }
-
     // /**
     //  * @return Sortie[] Returns an array of Sortie objects
     //  */
