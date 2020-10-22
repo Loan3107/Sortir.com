@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @Route("/sortie", name="sortie")
@@ -29,10 +30,10 @@ class SortieController extends AbstractController
      * @Route("/getList", name="_get_list")
      * @return Response
      */
-    public function getList()
+    public function getList(Request $request)
     {
         return $this->render('sortie/getList.html.twig', [
-            'title' => 'Liste des sorties',
+            'title' => 'Liste des sorties'
         ]);
     }
 
@@ -193,8 +194,8 @@ class SortieController extends AbstractController
         //Définition du tableau final à retourner
         $array = [];
 
-        //On récupère les sorties en base
         $toSortie = $sortieRepository->findAll();
+
         //Pour chaque sortie, on définit un tableau contenant les informations que l'on souhaite
         foreach ($toSortie as $oSortie) {
             $t = array();
