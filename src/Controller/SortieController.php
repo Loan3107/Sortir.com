@@ -229,7 +229,10 @@ class SortieController extends AbstractController
             //On récupère le libellé de l'état de la sortie
             $t['etat'] = $oSortie->getEtat()->getLibelle();
             //On récupère le pseudo de l'organisateur de la sortie
-            $t['organisateur'] = $oSortie->getOrganisateur()->getPseudo();
+            $t['organisateur'] = 
+                '<a type="button" href="'. $this->generateUrl('participant_show_profile', ['pseudoParticipant' => $oSortie->getOrganisateur()->getPseudo()]).'" class="btn p-0" title="Voir le profil">'
+                . $oSortie->getOrganisateur()->getPseudo()
+                .'</a>';
 
             $t['actions'] = "";
 
