@@ -116,9 +116,6 @@ class VilleController extends AbstractController
             $t['actions'] = 
                 '<a type="button" href="'. $this->generateUrl('ville_get_form', ['idVille' => $oVille->getId()]) .'" class="btn p-0" title="Modifier">'
                 .'<i class="fas fa-edit"></i>'
-                .'</a>'
-                .'<a type="button" href=""" class="btn p-0" title="Supprimer">'
-                .'<i class="fas fa-trash"></i>'
                 .'</a>';
 
             //On stocke les informations dans le tableau final

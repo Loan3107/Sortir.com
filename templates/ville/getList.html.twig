@@ -66,12 +66,16 @@
                     info: false,
                     lengthChange: false,
                     language: {
+                        search :
+                            "",
                         paginate: {
                             previous: '<i class="fas fa-chevron-left"></i>',
                             next: '<i class="fas fa-chevron-right"></i>'
                         }
                     }
-                }); 
+                });
+                $('.dataTables_filter').addClass("float-left");
+                $('.dataTables_filter input').attr("placeholder", "Rechercher ...").addClass("form-control");
             }
         });
     </script>
