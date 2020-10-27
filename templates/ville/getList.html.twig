@@ -1,0 +1,83 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %} {{ parent() }} | {{ title }} {% endblock %}
+
+{% block stylesheet %} {% endblock %}
+
+{% block body %}
+
+    <div class="card m-5 p-5">
+        <div class="row p-0 m-0">
+            <div class="col-md-6 p-0">
+                <h5 class="font-weight-bold">Liste des villes</h5>
+            </div>
+            <div class="col-md-6 p-0 d-flex justify-content-end">
+                <a type="button" href="{{ path('ville_get_form', {'idVille': -1}) }}" class="btn btn-outline-success">
+                    <i class="fas fa-plus"></i> Créer une ville
+                </a>
+            </div>
+        </div>
+
+        <div id="div_table_villes" class="mt-3">
+            <table id="table_villes" class="table table-striped mt-5 w-100">
+                <thead>
+                    <th>Identifiant</th>
+                    <th class="w-20">Ville</th>
+                    <th class="w-30">Code postal</th>
+                    <th>Actions</th>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script>
+        $.ajax({
+            url: '{{ path('ville_get_list_json') }}',
+            type: 'POST',
+            success: function(jsonResponse) {
+                $('#table_villes').DataTable({
+                    data: jsonResponse,
+                    columns: [
+                        { "data": "id" },
+                        { "data": "nom" },
+                        { "data": "codePostal" },
+                        { "data": "actions" }
+                    ],
+                    columnDefs: [
+                        {
+                            "targets": [ 0 ],
+                            "className": "d-none"
+                        },
+                        {
+                            "targets": [ 1, 2, 3 ],
+                            "className": "text-center"
+                        },
+                        {
+                            "targets": [ 3 ],
+                            "orderable": false
+                        }
+                    ],
+                    info: false,
+                    lengthChange: false,
+                    language: {
+                        search :
+                            "",
+                        paginate: {
+                            previous: '<i class="fas fa-chevron-left"></i>',
+                            next: '<i class="fas fa-chevron-right"></i>'
+                        }
+                    }
+                });
+                $('.dataTables_filter').addClass("float-left");
+                $('.dataTables_filter input').attr("placeholder", "Rechercher ...").addClass("form-control");
+            }
+        });
+    </script>
+
+{% endblock %}

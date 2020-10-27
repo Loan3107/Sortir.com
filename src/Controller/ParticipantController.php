@@ -16,6 +16,8 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 /**
  * @Route("/participant", name="participant")
  * @IsGranted("ROLE_USER")
+ * Class ParticipantController
+ * @package App\Controller
  */
 class ParticipantController extends AbstractController
 {
