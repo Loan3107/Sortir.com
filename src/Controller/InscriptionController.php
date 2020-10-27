@@ -14,6 +14,8 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/inscription", name="inscription")
  * @IsGranted("ROLE_USER")
+ * Class InscriptionController
+ * @package App\Controller
  */
 class InscriptionController extends AbstractController
 {
