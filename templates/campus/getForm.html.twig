@@ -1,0 +1,42 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %} {{ parent() }} | {{ title }} {% endblock %}
+
+{% block stylesheet %} {% endblock %}
+
+{% block body %}
+
+    <div class="card m-5 p-5">
+        <h3 class="title">{{ title }} d'un campus</h3>
+
+        {{ form_start(form, {'attr': {'class': 'form-inline mt-5'}}) }}
+
+        {{ form_errors(form) }}
+
+        <div class="container my_container">
+            <div class="form-group mb-3">
+                <label for="sortie_nom" class="col-form-label col-sm-3 justify-content-start">
+                    Nom
+                    <span class="required">*</span>
+                </label>
+                <div class="col-sm-6">
+                    {{ form_widget(form.nom) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 ml-auto mr-auto">
+            {{ form_widget(form.enregistrer) }}
+            <a type="button" href="{{ path('campus_get_list') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+{% endblock %}

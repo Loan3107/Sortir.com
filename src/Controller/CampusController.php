@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Ville;
-use App\Form\VilleType;
+use App\Entity\Campus;
+use App\Form\CampusType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -14,64 +14,64 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/ville", name="ville")
+ * @Route("/campus", name="campus")
  * @IsGranted("ROLE_ADMIN")
- * Class VilleController
+ * Class CampusController
  * @package App\Controller
  */
-class VilleController extends AbstractController
+class CampusController extends AbstractController
 {
     /**
-     * Affiche la liste des villes
+     * Affiche la liste des campus
      * @Route("/getList", name="_get_list")
      * @return Response
      */
     public function getList()
     {
-        return $this->render('ville/getList.html.twig', [
-            'title' => 'Villes',
+        return $this->render('campus/getList.html.twig', [
+            'title' => 'Campus',
         ]);
     }
 
     /**
-     * Affiche la page de création/modification d'une ville
-     * @Route("/getForm/{idVille}", name="_get_form")
+     * Affiche la page de création/modification d'un campus
+     * @Route("/getForm/{idCampus}", name="_get_form")
      * @param Request $request
      * @param $idVille
      * @return RedirectResponse|Response
      */
-    public function getForm(Request $request, $idVille)
+    public function getForm(Request $request, $idCampus)
     {
         //Récupération de l'entity manager
         $em = $this->getDoctrine()->getManager();
         //Récupération du repository de l'entité Ville
-        $villeRepository = $em->getRepository(Ville::class);
+        $campusRepository = $em->getRepository(Campus::class);
 
-        //Si l'identifiant de la ville fournie est égal à -1, il s'agit d'une création
-        if ($idVille == -1) {
-            $oVille = new Ville();
+        //Si l'identifiant du campus fournit est égal à -1, il s'agit d'une création
+        if ($idCampus == -1) {
+            $oCampus = new Campus();
             $title = "Création";
         } else { //Sinon il s'agit d'une modification
-            $oVille = $villeRepository->findOneBy(['id' => $idVille]);
+            $oCampus = $campusRepository->findOneBy(['id' => $idCampus]);
             $title = "Modification";
         }
 
         //Création du formulaire
-        $form = $this->createForm(VilleType::class, $oVille);
+        $form = $this->createForm(CampusType::class, $oCampus);
         $form->handleRequest($request);
 
         //Si le formulaire est soumit et est valide
         if ($form->isSubmitted() && $form->isValid()) {
             //On récupère les données et on hydrate l'instance
-            $oVille = $form->getData();
+            $oCampus = $form->getData();
 
             //On sauvegarde
-            $em->persist($oVille);
+            $em->persist($oCampus);
             $em->flush();
 
             //On affiche un message de succès et on redirige vers la liste des villes
-            $this->addFlash('success', 'Ville créée !');
-            return $this->redirectToRoute("ville_get_list");
+            $this->addFlash('success', 'Campus créé !');
+            return $this->redirectToRoute("campus_get_list");
         } else { //Si le formulaire n'est pas valide
             $errors = $this->getErrorsFromForm($form);
 
@@ -81,14 +81,14 @@ class VilleController extends AbstractController
             }
         }
 
-        return $this->render('ville/getForm.html.twig', [
+        return $this->render('campus/getForm.html.twig', [
             'title' => $title,
             'form' => $form->createView()
         ]);
     }
 
     /**
-     * Récupère la liste des villes au format JSON
+     * Récupère la liste des campus au format JSON
      * @Route("/getListJson", name="_get_list_json")
      * @return JsonResponse
      */
@@ -96,26 +96,24 @@ class VilleController extends AbstractController
     {
         //Récupération de l'entity manager
         $em = $this->getDoctrine()->getManager();
-        //Récupération du repository de l'entité Ville
-        $villeRepository = $em->getRepository(Ville::class);
+        //Récupération du repository de l'entité Campus
+        $campusRepository = $em->getRepository(Campus::class);
 
         //Définition du tableau final à retourner
         $array = [];
 
-        $toVille = $villeRepository->findAll();
+        $toCampus = $campusRepository->findAll();
 
         //Pour chaque ville, on définit un tableau contenant les informations que l'on souhaite
-        foreach ($toVille as $oVille) {
+        foreach ($toCampus as $oCampus) {
             $t = array();
-            //On récupère l'identifiant d'une ville
-            $t['id'] = $oVille->getId();
+            //On récupère l'identifiant d'un campus
+            $t['id'] = $oCampus->getId();
             //On récupère le nom
-            $t['nom'] = $oVille->getNom();
-            //On récupère le code postal
-            $t['codePostal'] = $oVille->getCodePostal();
+            $t['nom'] = $oCampus->getNom();
 
-            $t['actions'] = 
-                '<a type="button" href="'. $this->generateUrl('ville_get_form', ['idVille' => $oVille->getId()]) .'" class="btn p-0" title="Modifier">'
+            $t['actions'] =
+                '<a type="button" href="'. $this->generateUrl('campus_get_form', ['idCampus' => $oCampus->getId()]) .'" class="btn p-0" title="Modifier">'
                 .'<i class="fas fa-edit"></i>'
                 .'</a>';
 
