@@ -9,23 +9,22 @@
     <div class="card m-5 p-5">
         <div class="row p-0 m-0">
             <div class="col-md-6 p-0">
-                <h5 class="font-weight-bold">Liste des villes</h5>
+                <h5 class="font-weight-bold">Liste des campus</h5>
             </div>
             <div class="col-md-6 p-0 d-flex justify-content-end">
-                <a type="button" href="{{ path('ville_get_form', {'idVille': -1}) }}" class="btn btn-outline-success">
-                    <i class="fas fa-plus"></i> Créer une ville
+                <a type="button" href="{{ path('campus_get_form', {'idCampus': -1}) }}" class="btn btn-outline-success">
+                    <i class="fas fa-plus"></i> Créer un campus
                 </a>
             </div>
         </div>
         <hr>
 
-        <div id="div_table_villes">
-            <table id="table_villes" class="table table-striped mt-5 w-100">
+        <div id="div_table_campus">
+            <table id="table_campus" class="table table-striped mt-5 w-100">
                 <thead>
-                    <th>Identifiant</th>
-                    <th class="w-20">Ville</th>
-                    <th class="w-30">Code postal</th>
-                    <th>Actions</th>
+                <th>Identifiant</th>
+                <th>Campus</th>
+                <th>Actions</th>
                 </thead>
             </table>
         </div>
@@ -39,15 +38,14 @@
 
     <script>
         $.ajax({
-            url: '{{ path('ville_get_list_json') }}',
+            url: '{{ path('campus_get_list_json') }}',
             type: 'POST',
             success: function(jsonResponse) {
-                $('#table_villes').DataTable({
+                $('#table_campus').DataTable({
                     data: jsonResponse,
                     columns: [
                         { "data": "id" },
                         { "data": "nom" },
-                        { "data": "codePostal" },
                         { "data": "actions" }
                     ],
                     columnDefs: [
@@ -56,11 +54,11 @@
                             "className": "d-none"
                         },
                         {
-                            "targets": [ 1, 2, 3 ],
+                            "targets": [ 1, 2 ],
                             "className": "text-center"
                         },
                         {
-                            "targets": [ 3 ],
+                            "targets": [ 2 ],
                             "orderable": false
                         }
                     ],
