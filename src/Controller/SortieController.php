@@ -128,6 +128,34 @@ class SortieController extends AbstractController
     }
 
     /**
+     * Affiche la page de détail d'une sortie
+     * @Route("/getPage/{idSortie}", name="_get_page")
+     * @param $idSortie
+     * @return RedirectResponse|Response
+     */
+    public function getPage($idSortie)
+    {
+        //Récupération de l'entity manager
+        $em = $this->getDoctrine()->getManager();
+        //Récupération du repository de l'entité Sortie
+        $sortieRepository = $em->getRepository(Sortie::class);
+
+        //Récupération de la sortie demandée
+        $oSortie = $sortieRepository->findOneBy(['id' => $idSortie]);
+        //Si la sortie n'existe pas
+        if (!$oSortie) {
+            //Affichage d'un message d'erreur et redirection vers la liste des sorties
+            $this->addFlash('danger', "La sortie recherchée n'existe pas");
+            return $this->redirectToRoute('sortie_get_list');
+        }
+
+        return $this->render('sortie/getPage.html.twig', [
+            'title' => "Détail sortie",
+            'oSortie' => $oSortie
+        ]);
+    }
+
+    /**
      * Permet à l'utilisateur d'annuler une sortie qu'il a organisé
      * @Route("/cancel/{idSortie}", name="_cancel")
      * @param $idSortie
@@ -234,7 +262,10 @@ class SortieController extends AbstractController
                 . $oSortie->getOrganisateur()->getPseudo()
                 .'</a>';
 
-            $t['actions'] = "";
+            $t['actions'] =
+                '<a type="button" href="'. $this->generateUrl('sortie_get_page', ['idSortie' => $oSortie->getId()]).'" class="btn p-0" title="Afficher">'
+                .'<i class="fas fa-search"></i>'
+                .'</a>';
 
             //Si l'utilisateur est organisateur de la sortie et que l'état de la sortie est à créé,
             //l'utilisateur peut toujours la modifier ou la supprimer

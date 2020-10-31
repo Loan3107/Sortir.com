@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Participant;
+use App\Entity\Sortie;
 use App\Form\ParticipantType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -116,5 +118,50 @@ class ParticipantController extends AbstractController
             'isAuthorizedToModify' => $isAuthorizedToModify,
             'form' => $formView
         ]);
+    }
+
+    /**
+     * @Route("/getListJson", name="_get_list_json")
+     * @param Request $request
+     * @return JsonResponse|RedirectResponse
+     */
+    public function getListJson(Request $request)
+    {
+        //Récupération de l'entity manager
+        $em = $this->getDoctrine()->getManager();
+        //Récupération du repository de l'entité Sortie
+        $sortieRepository = $em->getRepository(Sortie::class);
+
+        //Récupération de l'identifiant de la sortie
+        $idSortie = $request->get("idSortie");
+
+        //Récupération de la sortie
+        $oSortie = $sortieRepository->findOneBy(['id' => $idSortie]);
+        //Si on ne trouve pas la sortie
+        if (!$oSortie) {
+            //On affiche un message d'erreur et on redirige vers la liste des sorties
+            $this->addFlash('danger', "La sortie n'existe pas");
+            return $this->redirectToRoute('sortie_get_list');
+        }
+
+        //Récupération des inscriptions à la sortie
+        $toInscription = $oSortie->getInscriptions();
+        $array= [];
+
+        //Pour chaque inscription, on récupère les informations du participant
+        foreach ($toInscription as $oInscription) {
+            $oParticipant = $oInscription->getParticipant();
+
+            $t = array();
+            $t['pseudo'] =
+                '<a type="button" href="'. $this->generateUrl('participant_show_profile', ['pseudoParticipant' => $oParticipant->getPseudo()]).'" class="btn p-0" title="Voir le profil">'
+                . $oParticipant->getPseudo()
+                .'</a>';
+            $t['nom'] = $oParticipant->getNom() . " " . $oParticipant->getNom();
+
+            $array[] = $t;
+        }
+
+        return new JsonResponse($array);
     }
 }
