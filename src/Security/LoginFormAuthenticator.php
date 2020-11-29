@@ -76,6 +76,10 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
             throw new CustomUserMessageAuthenticationException(
                 "Les informations renseignées sont invalides"
             );
+        } elseif (!$user->getIsActif()) {
+            throw new CustomUserMessageAuthenticationException(
+                "Votre compte a été désactivé, vous ne pouvez pas vous connecter"
+            );
         }
 
         return $user;
