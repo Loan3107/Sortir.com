@@ -112,7 +112,7 @@ class SortieController extends AbstractController
             //On affiche un message de succès et on redirige vers la page des sorties
             $this->addFlash('success', 'Sortie publiée et ouverte à l\'inscription !');
             return $this->redirectToRoute("sortie_get_list");
-        }else { //Si le formulaire n'est pas valide
+        } else { //Si le formulaire n'est pas valide
             $errors = $this->getErrorsFromForm($form);
 
             //Pour chaque erreur, on affiche une alerte contenant le message

@@ -62,7 +62,7 @@
 
     <script>
         $.ajax({
-            url: '{{ path('participant_get_list_json') }}',
+            url: '{{ path('participant_get_list_json_by_sortie') }}',
             type: 'POST',
             data: {
                 idSortie: {{ oSortie.id }}
