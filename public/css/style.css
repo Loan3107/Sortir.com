@@ -20,6 +20,14 @@ body {
     color: white;
 }
 
+.nav-link {
+    color: white;
+}
+
+.nav-link:hover {
+    color: white;
+}
+
 .title {
     font-family: 'Sansita Swashed', cursive;
     color: #24292e;

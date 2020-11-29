@@ -74,7 +74,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         if (!$user) {
             //Erreur d'authentification
             throw new CustomUserMessageAuthenticationException(
-                "Les informations renseignées sont ivalides"
+                "Les informations renseignées sont invalides"
             );
         }
 
